@@ -38,12 +38,20 @@ public class Server {
                             out.println("F1 made");
                             out.flush();
                             OutputStream os = new FileOutputStream(file);
+                            DataInputStream temp = new DataInputStream(socket.getInputStream());
+                            line = in.readLine();
                             while(!line.equals("EOF")) {
-                                System.out.println("hello");
-                                os.write(in.read());
-                                System.out.println("bye");
+                                byte[] b = new byte[256];
+                                if(line.equals("content")){
+                                    out.println("received");
+                                    out.flush();
+                                    temp.read(b);
+                                    os.write(b);
+                                }
                                 line = in.readLine();
                             }
+                            out.println("F1 finshed");
+
                         }
                         else{
                             System.out.println("error");

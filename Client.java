@@ -1,12 +1,35 @@
 // The client Role
 import java.net.Socket;
 import java.io.*;
+import java.util.Arrays;
 
 public class Client {
     // initialize socket and input output streams
     private Socket socket = null;
     private BufferedReader in = null;
     private PrintStream out = null;
+
+    private void fileCopy(FileInputStream f) throws IOException {
+        byte[] b = new byte[256];
+        String line;
+        boolean eof = (f.read(b) == -1);
+        while(!eof){
+            out.println("content");
+            out.flush();
+            System.out.println("content");
+            line = in.readLine();
+            if(line.equals("received")){
+                out.write(b);
+            }
+            System.out.println((Arrays.toString(b)));
+            Arrays.fill(b, (byte) 0);
+            eof = (f.read(b) == -1);
+            if(eof){
+                out.println("EOF");
+                System.out.println("EOF");
+            }
+        }
+    }
 
     // constructor to initialize ip address and port
     public Client(String address, int port) throws IOException {
@@ -30,19 +53,30 @@ public class Client {
                 out.flush();
                 line = in.readLine();
                 if(line.equals("F1 made")){
-                    byte[] b = new byte[256];
+                    //byte[] b = new byte[256];
                     FileInputStream f = new FileInputStream("C:\\Users\\major\\IdeaProjects\\socket programming\\D1\\F1.txt");
-                    while(f.read(b) != -1){
-                        if(f.read(b) != -1){
+                    fileCopy(f);
+                    /*boolean eof = (f.read(b) == -1);
+                    while(!eof){
+                        out.println("content");
+                        out.flush();
+                        System.out.println("content");
+                        line = in.readLine();
+                        if(line.equals("received")){
                             out.write(b);
                         }
-                        else{
-                            out.write(b);
-                            out.println("\n EOF");
+                        System.out.println((Arrays.toString(b)));
+                        Arrays.fill(b, (byte) 0);
+                        eof = (f.read(b) == -1);
+                        if(eof){
+                            out.println("EOF");
+                            System.out.println("EOF");
                         }
+                    }*/
+                    line = in.readLine();
+                    if(line.equals("F1 finished")){
+                        f = new FileInputStream("C:\\Users\\major\\IdeaProjects\\socket programming\\D1\\F2.txt");
                     }
-                    // read F1 -> server
-                    // server write F1 -> F1'
                 }
             }
         }
