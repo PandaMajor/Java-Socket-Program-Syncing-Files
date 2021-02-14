@@ -1,4 +1,4 @@
-// The client Role (C2)
+// The client role (C2)
 import java.net.Socket;
 import java.io.*;
 import java.util.Arrays;
@@ -22,27 +22,24 @@ public class Client {
         while(!eof){                            // Repeat until EOF is reached
             out.println("content");
             out.flush();
-            System.out.println("content");
             line = in.readLine();
             if(line.equals("received")){
                 out.write(b);
             }
-            System.out.println((Arrays.toString(b)));
-            Arrays.fill(b, (byte) 0);           // Reset the array to 0s
+            Arrays.fill(b, (byte) -1);           // Reset the array to -1s
             eof = (f.read(b) == -1);
             if(eof){
                 out.println("EOF");
-                System.out.println("EOF");
             }
         }
     }
 
     // Constructor to initialize ip address and port
-    public Client(String address, int port) {
+    private Client(String address, int port) {
         try{
             // Create a connection
             socket = new Socket(address, port);
-            System.out.print("Connected");
+            System.out.println("Connected");
 
             // Create input/output channels
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -61,12 +58,13 @@ public class Client {
                 line = in.readLine();
                 // Upon receiving "F1 made", send message to prepare copying F1
                 if(line.equals("F1 made")){
-                    FileInputStream f = new FileInputStream(path+"F1.txt");
+                    FileInputStream f = new FileInputStream(path+"F1");
                     fileCopy(f);
                     line = in.readLine();
                     // Upon receiving "F1 finished", send message to create F2
                     if(line.equals("F1 finished")){
-                        f = new FileInputStream(path+"F2.txt");
+                        f = new FileInputStream(path+"F2");
+                        System.out.println("F1 copied successfully");
                         out.println("make F2");
                         out.flush();
                         line = in.readLine();
@@ -78,6 +76,8 @@ public class Client {
                             if(line.equals("F2 finished")){
                                 out.println("end of session");
                                 out.flush();
+                                System.out.println("F2 copied successfully");
+                                System.out.println("Closing client");
                                 // close connection
                                 in.close();
                                 out.close();
@@ -94,6 +94,6 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        Client client = new Client("127.0.0.1", 5000);
+        Client client = new Client("127.0.0.1", 5000);  // Connect to server at port 5000
     }
 }

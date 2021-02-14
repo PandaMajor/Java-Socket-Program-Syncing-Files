@@ -42,21 +42,33 @@ public class Server {
                 out.println("received");
                 out.flush();
                 temp.read(b);
-                os.write(b);
+
+                int i = 255;
+                int counter = 0;
+                if(b[255] == -1){                       // Get rid of excess output
+                    while(b[i] == -1){
+                        counter += 1;
+                        i--;
+                    }
+                    os.write(b,0,255-counter);
+                }
+                else{
+                    os.write(b);
+                }
             }
             line = in.readLine();   // Check if EOF is reached
         }
     }
 
     // Constructor with port
-    public Server(int port){
+    private Server(int port){
         // Start server and wait for connection
         try{
-            server = new ServerSocket(port);
-            System.out.println("Server started");
+            server = new ServerSocket(port);        // Start server
+            System.out.println("Server started");   // Debug message
 
-            socket = server.accept();
-            System.out.println("Client accepted");
+            socket = server.accept();               // Wait for clients
+            System.out.println("Client accepted");  // Debug message
 
             // Create input/output channels
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -108,6 +120,7 @@ public class Server {
             line = in.readLine();
             if(line.equals("end of session")){
                 // Close connection
+                System.out.println("Closing server");
                 out.close();
                 in.close();
                 socket.close();
@@ -119,6 +132,6 @@ public class Server {
     }
 
     public static void main(String[] args){
-        Server server = new Server(5000);
+        Server server = new Server(5000);       // Open server on port 5000
     }
 }
